@@ -7,6 +7,8 @@ import (
 	"os"
 
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/config"
+	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/lib/logger/sl"
+	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/storage/sqlite"
 )
 
 const (
@@ -26,9 +28,15 @@ func main() {
 	logger.Info("starting server...", slog.String("env", cfg.Env))
 	logger.Debug("debug message are enebled")
 
-	//TODO: init logger: slog
+	storage, err := sqlite.New(cfg.StoragePath)
+	if err != nil {
+		logger.Error("cannot create storage: %w", sl.Err(err))
+		os.Exit(1)
+	}
 
-	//TODO: init storage: sqlite
+	// storage.SaveURL("test", "test")
+	fmt.Println(storage.DeleteURL("test"))
+	_ = storage
 
 	//TODO: init router: chi, chi rander
 
