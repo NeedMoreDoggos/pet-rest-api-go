@@ -9,7 +9,7 @@ import (
 	resp "github.com/NeedMoreDoggos/pet-rest-api-go/internal/lib/logger/sl/api/response"
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/lib/random"
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/storage"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 )
