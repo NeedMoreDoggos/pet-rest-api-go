@@ -9,6 +9,8 @@ import (
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/config"
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/lib/logger/sl"
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/storage/sqlite"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 const (
@@ -38,7 +40,11 @@ func main() {
 	fmt.Println(storage.DeleteURL("test"))
 	_ = storage
 
-	//TODO: init router: chi, chi rander
+	router := chi.NewRouter()
+	//middleware
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(middleware.Logger)
 
 	//TODO: run server
 }
