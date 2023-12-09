@@ -31,7 +31,7 @@ func New(log *slog.Logger) func(next http.Handler) http.Handler {
 				entry.Info("request complete",
 					slog.Int("status", ww.Status()),
 					slog.Int("bytes_written", ww.BytesWritten()),
-					slog.Duration("elapsed", time.Since(t1)),
+					slog.Duration("duration", time.Since(t1)),
 				)
 			}()
 			next.ServeHTTP(ww, r)

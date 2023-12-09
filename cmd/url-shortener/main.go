@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"net/http"
 	"os"
 
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/config"
+	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/http-server/handlers/url/save"
+	mwLogger "github.com/NeedMoreDoggos/pet-rest-api-go/internal/http-server/middleware/logger"
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/lib/logger/sl"
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/storage/sqlite"
 	"github.com/go-chi/chi/v5"
@@ -44,9 +47,28 @@ func main() {
 	//middleware
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
-	router.Use(middleware.Logger)
+	router.Use(mwLogger.New(logger))
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
 
-	//TODO: run server
+	router.Post("/url", save.New(logger, storage))
+	router.Get("/{alias}", redirect.New(logger, storage))
+
+	logger.Info("server started", slog.String("address", cfg.HTTPServer.Address))
+
+	srv := &http.Server{
+		Addr:         cfg.HTTPServer.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		logger.Error("failed to start server")
+	}
+
+	logger.Error("server stopped")
 }
 
 func setupLogger(env string) (*slog.Logger, error) {
