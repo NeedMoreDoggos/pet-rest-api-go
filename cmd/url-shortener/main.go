@@ -8,6 +8,8 @@ import (
 	"os"
 
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/config"
+	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/http-server/handlers/delete"
+	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/http-server/handlers/redirect"
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/http-server/handlers/url/save"
 	mwLogger "github.com/NeedMoreDoggos/pet-rest-api-go/internal/http-server/middleware/logger"
 	"github.com/NeedMoreDoggos/pet-rest-api-go/internal/lib/logger/sl"
@@ -39,10 +41,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// storage.SaveURL("test", "test")
-	fmt.Println(storage.DeleteURL("test"))
-	_ = storage
-
 	router := chi.NewRouter()
 	//middleware
 	router.Use(middleware.RequestID)
@@ -53,6 +51,7 @@ func main() {
 
 	router.Post("/url", save.New(logger, storage))
 	router.Get("/{alias}", redirect.New(logger, storage))
+	router.Delete("/{alias}", delete.New(logger, storage))
 
 	logger.Info("server started", slog.String("address", cfg.HTTPServer.Address))
 

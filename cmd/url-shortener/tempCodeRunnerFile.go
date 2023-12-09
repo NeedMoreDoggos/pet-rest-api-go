@@ -1,0 +1,1 @@
+router.Get("/{alias}", redirect.New(logger, storage))
